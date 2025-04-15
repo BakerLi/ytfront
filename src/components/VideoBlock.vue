@@ -1,9 +1,9 @@
 <template>
     <el-container class="p-4">
       <el-main>
-        <div v-if="embedUrl" class="video-wrapper mt-4">
+        <div v-if="store.embedUrl" class="video-wrapper mt-4">
           <iframe
-            :src="embedUrl"
+            :src="store.embedUrl"
             width="560"
             height="315"
             frameborder="0"
@@ -12,9 +12,8 @@
         </div>
   
         <el-input
-          v-model="youtubeLink"
+          v-model="store.youtubeLink"
           placeholder="請貼上 YouTube 影片連結"
-          @input="extractAndEmbed"
           clearable
         ></el-input>
   
@@ -35,43 +34,15 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+    import { useYTDLStore } from '../stores/ytdls'
+    import { watch } from 'vue'
+    const store = useYTDLStore()
   
-  const youtubeLink = ref('')
-  const videoId = ref('')
-  const playlistId = ref('')
-  const embedUrl = ref('')
+    // 監聽連結變化，自動解析
+    watch(() => store.youtubeLink, () => {
+      store.extractAndEmbed()
+    })
   
-  const extractAndEmbed = () => {
-    const url = youtubeLink.value
-  
-    const videoRegex =
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-    const playlistRegex = /[?&]list=([a-zA-Z0-9_-]+)/
-  
-    const videoMatch = url.match(videoRegex)
-    const playlistMatch = url.match(playlistRegex)
-  
-    if (playlistMatch && !videoMatch) {
-      // 僅 playlist
-      playlistId.value = playlistMatch[1]
-      embedUrl.value = `https://www.youtube.com/embed?listType=playlist&list=${playlistId.value}`
-      videoId.value = ''
-    } else if (videoMatch) {
-      // 單部影片或影片 + playlist
-      videoId.value = videoMatch[1]
-      if (playlistMatch) {
-        playlistId.value = playlistMatch[1]
-        embedUrl.value = `https://www.youtube.com/embed/${videoId.value}?list=${playlistId.value}`
-      } else {
-        embedUrl.value = `https://www.youtube.com/embed/${videoId.value}`
-      }
-    } else {
-      videoId.value = ''
-      playlistId.value = ''
-      embedUrl.value = ''
-    }
-  }
   </script>
   
   
