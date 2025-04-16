@@ -9,10 +9,13 @@ export const useYTDLStore = defineStore('ytdls', () => {
     const embedUrl = ref('')
     const logs = ref<string[]>([])
     const isDownloading = ref(false)
+
+    const addLog = (msg: string) => logs.value.push(msg)
+    const clearLogs = () => (logs.value = [])
+    const setDownloading = (val: boolean) => (isDownloading.value = val)
   
     const extractAndEmbed = () => {
       const url = youtubeLink.value
-  
       const videoRegex =
         /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
       const playlistRegex = /[?&]list=([a-zA-Z0-9_-]+)/
@@ -38,10 +41,8 @@ export const useYTDLStore = defineStore('ytdls', () => {
         embedUrl.value = ''
       }
     }
-
-    const addLog = (msg: string) => logs.value.push(msg)
-    const clearLogs = () => (logs.value = [])
-    const setDownloading = (val: boolean) => (isDownloading.value = val)
+    
+    
   
     return {
       youtubeLink,

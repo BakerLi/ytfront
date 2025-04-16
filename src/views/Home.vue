@@ -4,9 +4,26 @@
   <div>
       <h1>Home</h1>
       <VideoBlock></VideoBlock>
-      <el-button type="primary" @click="startDownload">
-      salute!
-      </el-button>
+      
+      <el-table :data="filesStore.files" style="width: 100%">
+        <el-table-column label="縮圖" width="150">
+          <template #default="scope">
+            <img :src="scope.row.thumbnail" alt="thumbnail" style="width: 100px; height: auto;" />
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="name" label="檔案名稱" width="480"/>
+
+        <el-table-column prop="size" label="大小" />
+
+        <el-table-column label="操作" width="120">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="download(scope.row)">
+              下載
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <div class="log-output" ref="logContainerRef">
         <p v-for="(log, i) in store.logs" :key="i">{{ log }}</p>
@@ -17,13 +34,22 @@
 <script setup lang="ts">
   import { ref, onUpdated } from 'vue'
   import VideoBlock from '../components/VideoBlock.vue'
-  import { io, Socket } from 'socket.io-client'
+  import { useYTDLStore } from '../stores/ytdls' 
+  import { useFilesStore } from '../stores/files'
   import axios from 'axios'
-  import { useYTDLStore } from '../stores/ytdls'
 
   const store = useYTDLStore()
+  const filesStore = useFilesStore()
   const logContainerRef = ref<HTMLElement | null>(null)
-  let socket: Socket | null = null
+
+  const download = (file: any) => {
+      const link = document.createElement('a');
+      link.href = `http://localhost:3000/downloads/directID?id=${store.videoId}`;
+      link.download = `${store.videoId}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  }
 
   onUpdated(() => {
     if (logContainerRef.value) {
@@ -31,41 +57,7 @@
     }
   })
 
-  const startDownload = async () => {
-    if (!store.youtubeLink) return
-    socket = io('http://localhost:3000', {
-      query: { taskId: store.youtubeLink }
-    })
-
-    store.setDownloading(true)
-    store.clearLogs()
-
-    socket.on('log', (msg) => {
-      store.addLog(msg)
-    })
-
-    socket.on('downloadComplete', (url) => {
-      store.logs.push('下載完成!')
-      store.logs.push(`here：<a href="${url}" target="_blank">download</a>`)
-
-      socket.disconnect()  // 關閉 Socket 連接
-      socket = null
-      store.setDownloading(false)
-    })
-
-    socket.on('disconnect', () => {
-      store.setDownloading(false)
-    })
   
-    try {
-      await axios.post('http://localhost:3000/socketdl', { url: store.youtubeLink })
-    } catch (err) {
-      store.addLog(`[錯誤] ${err.message || err}`)
-      socket?.disconnect()
-      store.setDownloading(false)
-    }
-
-}
 </script>
 
 <style scoped>
