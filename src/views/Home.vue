@@ -36,7 +36,6 @@
   import VideoBlock from '../components/VideoBlock.vue'
   import { useYTDLStore } from '../stores/ytdls' 
   import { useFilesStore } from '../stores/files'
-  import axios from 'axios'
 
   const store = useYTDLStore()
   const filesStore = useFilesStore()
@@ -44,11 +43,12 @@
 
   const download = (file: any) => {
       const link = document.createElement('a');
-      link.href = `http://localhost:3000/downloads/directID?id=${store.videoId}`;
+      link.href = `https://thxjupiter.ddns.net/downloads/directID?id=${store.videoId}`;
       link.download = `${store.videoId}.mp4`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      console.log(file);
   }
 
   onUpdated(() => {

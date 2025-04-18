@@ -42,7 +42,7 @@
 
     const startDownload = async () => {
       if (!store.youtubeLink) return
-        socket = io('http://localhost:3000', {
+        socket = io('https://thxjupiter.ddns.net/', {
         query: { taskId: store.youtubeLink }
       })
 
@@ -60,7 +60,7 @@
           name: `${store.videoId}`,
           size: '* MB',
           thumbnail: `https://img.youtube.com/vi/${store.videoId}/hqdefault.jpg`,
-          url: '/downloads/video1.mp4',
+          url: `/downloads/${store.videoId}.mp4`,
         })
         socket.disconnect()  // 關閉 Socket 連接
         socket = null
@@ -72,7 +72,7 @@
       })
     
       try {
-        await axios.post('http://localhost:3000/socketdl', { url: store.youtubeLink })
+        await axios.post('https://thxjupiter.ddns.net/socketdl', { url: store.youtubeLink })
       } catch (err) {
         store.addLog(`[錯誤] ${err.message || err}`)
         socket?.disconnect()
