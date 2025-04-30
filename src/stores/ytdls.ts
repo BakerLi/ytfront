@@ -9,6 +9,7 @@ export const useYTDLStore = defineStore('ytdls', () => {
     const embedUrl = ref('')
     const logs = ref<string[]>([])
     const isDownloading = ref(false)
+    const format = ref('')
 
     const addLog = (msg: string) => logs.value.push(msg)
     const clearLogs = () => (logs.value = [])
@@ -54,6 +55,7 @@ export const useYTDLStore = defineStore('ytdls', () => {
       clearLogs,
       logs,
       setDownloading,
-      isDownloading
+      isDownloading,
+      format
     }
   })

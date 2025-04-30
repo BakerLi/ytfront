@@ -9,8 +9,12 @@ const routes = [
     path: '/', 
     component: () => import('../../src/views/Home.vue'),  // 非同步匯入不會出錯
     name: 'Home' 
-},
-  { path: '/login', component: Login, name: 'Login' },
+  },
+  { 
+    path: '/login', 
+    component: Login, 
+    name: 'Login' 
+  },
 ]
 
 const router = createRouter({

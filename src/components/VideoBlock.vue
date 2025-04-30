@@ -10,17 +10,27 @@
             allowfullscreen
           ></iframe>
         </div>
-  
+        
         <el-input
           v-model="store.youtubeLink"
+          style="max-width: 600px"
           placeholder="請貼上 YouTube 影片連結"
           clearable
-        ></el-input>
-
-        <el-button type="primary" @click="startDownload">
-        salute!
-        </el-button>
-        
+          class="input-with-select"
+        >
+          <template #prepend>
+            <el-select v-model="store.format" placeholder="Select" style="width: 115px">
+              <el-option label="mp4" value="1" />
+              <el-option label="mp3" value="2" />
+            </el-select>
+          </template>
+          <template #append>
+            <!-- <el-button :icon="Search" /> -->
+            <el-button type="primary" @click="startDownload">
+              salute!
+            </el-button>
+          </template>
+        </el-input>
       </el-main>
     </el-container>
   </template>
@@ -87,5 +97,6 @@
       display: flex;
       justify-content: center;
     }
+    
   </style>
   
